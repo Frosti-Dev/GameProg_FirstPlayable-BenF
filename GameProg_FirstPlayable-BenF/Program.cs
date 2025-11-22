@@ -12,6 +12,10 @@ namespace GameProg_FirstPlayable_BenF
         static int playerHealth;
         static int playerPosX = 5;
         static int playerPosY = 5;
+        static (int,int) enemy1Pos = (1, 12);
+        static (int,int) enemy2Pos = (23, 1);
+        static (int,int) enemy3Pos = (23, 12);
+
         static int scale = 1;
 
         static char[,] map = new char[,] // dimensions defined by following data:
@@ -142,6 +146,21 @@ namespace GameProg_FirstPlayable_BenF
             }
         }
 
+        static void EnemyDraw((int, int) Enemy)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.SetCursorPosition(Enemy.Item1, Enemy.Item2);
+            Console.Write("X");
+            Console.SetCursorPosition(Enemy.Item1, Enemy.Item2);
+            Console.ForegroundColor = ConsoleColor.White;
+
+        }
+
+        static void EnemyUpdate((int,int) Enemy)
+        {
+
+        }
+
         static void Main(string[] args)
         {
             
@@ -149,6 +168,11 @@ namespace GameProg_FirstPlayable_BenF
             {
                 Console.Clear();
                 DisplayMap(scale);
+
+                EnemyDraw(enemy1Pos);
+                EnemyDraw(enemy2Pos);
+                EnemyDraw(enemy3Pos);
+
                 PlayerDraw(playerPosX, playerPosY);
                 PlayerUpdate();
 
