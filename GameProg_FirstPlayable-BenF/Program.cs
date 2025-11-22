@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -156,9 +157,39 @@ namespace GameProg_FirstPlayable_BenF
 
         }
 
-        static void EnemyUpdate((int,int) Enemy)
+        static (int,int) EnemyUpdate((int,int) Enemy)
         {
+            //aligns enemy x with player x
+            if(Enemy.Item1 > playerPosX)
+            {
+                Enemy.Item1 -= 1;
+            }
 
+            else if (Enemy.Item1 < playerPosX)
+            {
+                Enemy.Item1 += 1;
+            }
+            else
+            {
+                //do nothing
+            }
+
+            //aligns enemy y with player y
+            if (Enemy.Item2 > playerPosY)
+            {
+                Enemy.Item2 -= 1;
+            }
+
+            else if (Enemy.Item2 < playerPosY)
+            {
+                Enemy.Item2 += 1;
+            }
+            else
+            {
+                //do nothing
+            }
+
+            return Enemy;
         }
 
         static void Main(string[] args)
@@ -169,13 +200,25 @@ namespace GameProg_FirstPlayable_BenF
                 Console.Clear();
                 DisplayMap(scale);
 
+
+
+                //enemy turn
+
+                
+
                 EnemyDraw(enemy1Pos);
                 EnemyDraw(enemy2Pos);
                 EnemyDraw(enemy3Pos);
 
+                enemy1Pos = EnemyUpdate(enemy1Pos);
+                enemy2Pos = EnemyUpdate(enemy2Pos);
+                enemy3Pos = EnemyUpdate(enemy3Pos);
+
+                //player turn
                 PlayerDraw(playerPosX, playerPosY);
                 PlayerUpdate();
 
+                
                 Debug.Print($"Cords: {playerPosX},{playerPosY}");
             }
         }
