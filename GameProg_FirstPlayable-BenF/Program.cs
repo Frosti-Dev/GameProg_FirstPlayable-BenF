@@ -4,18 +4,30 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GameProg_FirstPlayable_BenF
 {
     internal class Program
     {
-        static int playerHealth;
+        static bool playerAlive = true;
+        static bool playerTurn;
+        static int playerHealth = 10;
         static int playerPosX = 5;
         static int playerPosY = 5;
+
+
+        static int enemy1Health = 2;
+        static int enemy2Health = 3;
+        static int enemy3Health = 1;
         static (int,int) enemy1Pos = (1, 12);
         static (int,int) enemy2Pos = (23, 1);
         static (int,int) enemy3Pos = (23, 12);
+
+        static bool enemy1Alive = true;
+        static bool enemy2Alive = true;
+        static bool enemy3Alive = true;
 
         static int scale = 1;
 
@@ -78,11 +90,33 @@ namespace GameProg_FirstPlayable_BenF
             Console.Write('+');
             Console.WriteLine(" ");
 
-            Console.WriteLine("Map legend: ");
-            Console.WriteLine("^ = mountain");
-            Console.WriteLine("` = grass");
-            Console.WriteLine("~ = water");
-            Console.WriteLine("* = trees");
+            //Displays
+            //Console.WriteLine("Map legend: ");
+            //Console.WriteLine("^ = mountain");
+            //Console.WriteLine("` = grass");
+            //Console.WriteLine("~ = water");
+            //Console.WriteLine("* = trees");
+            Console.WriteLine(" ");
+
+            Console.WriteLine("Predict where they will go to hurt them!!! But watch your postition...if they get to you first then you'll take damage!");
+            Console.WriteLine("Head on collsions will result in you taking damage.");
+            Console.WriteLine(" ");
+
+
+            Console.WriteLine("Controls: WASD to move");
+            Console.WriteLine("          Space to stall");
+            Console.WriteLine(" ");
+
+
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine($"Health: {playerHealth}");
+            Console.WriteLine(" ");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Enemy 1 Health: {enemy1Health}");
+            Console.WriteLine($"Enemy 2 Health: {enemy2Health}");
+            Console.WriteLine($"Enemy 3 Health: {enemy3Health}");
+
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         static void PlayerDraw(int x, int y)
@@ -151,7 +185,20 @@ namespace GameProg_FirstPlayable_BenF
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.SetCursorPosition(Enemy.Item1, Enemy.Item2);
-            Console.Write("X");
+            if (Enemy == enemy1Pos)
+            {
+                Console.Write("1");
+            }
+
+            if (Enemy == enemy2Pos)
+            {
+                Console.Write("2");
+            }
+
+            if (Enemy == enemy3Pos)
+            {
+                Console.Write("3");
+            }
             Console.SetCursorPosition(Enemy.Item1, Enemy.Item2);
             Console.ForegroundColor = ConsoleColor.White;
 
@@ -189,38 +236,177 @@ namespace GameProg_FirstPlayable_BenF
                 //do nothing
             }
 
+            if (enemy1Health == 0)
+            {
+                enemy1Alive = false;
+                enemy1Pos = (50, 0);
+            }
+
+            if (enemy2Health == 0)
+            {
+                enemy2Alive = false;
+                enemy2Pos = (50, 0);
+
+            }
+
+            if (enemy3Health == 0)
+            {
+                enemy3Alive = false;
+                enemy3Pos = (50, 0);
+
+            }
+
             return Enemy;
+        }
+
+        
+        static void CheckCollides(bool PlayerTurn)
+        {
+            (int, int) playerPos = (playerPosX, playerPosY);
+
+            if (PlayerTurn)
+            {
+                if (playerPos == enemy1Pos)
+                {
+                    enemy1Health -= 1;
+                    
+                    //back to spawn
+                    enemy1Pos = (1, 12);
+                }
+
+                else if (playerPos == enemy2Pos)
+                {
+                    enemy2Health -= 1;
+
+                    //back to spawn
+                    enemy2Pos = (23, 1);
+                }
+
+                else if (playerPos == enemy3Pos)
+                {
+                    enemy3Health -= 1;
+
+                    //back to spawn
+                    enemy3Pos = (23, 12);
+                }
+
+                else
+                {
+                    //do nothing
+                }
+
+                playerTurn = false;
+            }
+
+            else
+            {
+                if (playerPos == enemy1Pos)
+                {
+                    playerHealth -= 1;
+
+                    //back to spawn
+                    enemy1Pos = (1, 12);
+                }
+
+                else if (playerPos == enemy2Pos)
+                {
+                    playerHealth -= 1;
+
+                    //back to spawn
+                    enemy2Pos = (23, 1);
+                }
+
+                else if (playerPos == enemy3Pos)
+                {
+                    playerHealth -= 1;
+
+                    //back to spawn
+                    enemy3Pos = (23, 12);
+                }
+
+                else
+                {
+                    //do nothing
+                }
+
+                playerTurn = true;
+            }
         }
 
         static void Main(string[] args)
         {
             
-            while (true)
+            while (playerAlive)
             {
                 Console.Clear();
                 DisplayMap(scale);
 
+                if (enemy1Alive)
+                {
+                    EnemyDraw(enemy1Pos);
+                }
 
+                if (enemy2Alive)
+                {
+                    EnemyDraw(enemy2Pos);
+                }
+
+                if (enemy3Alive)
+                {
+                    EnemyDraw(enemy3Pos);
+                }
+
+                PlayerDraw(playerPosX, playerPosY);
 
                 //enemy turn
 
+                if (enemy1Alive)
+                {
+                    enemy1Pos = EnemyUpdate(enemy1Pos);
+                }
                 
-
-                EnemyDraw(enemy1Pos);
-                EnemyDraw(enemy2Pos);
-                EnemyDraw(enemy3Pos);
-
-                enemy1Pos = EnemyUpdate(enemy1Pos);
-                enemy2Pos = EnemyUpdate(enemy2Pos);
-                enemy3Pos = EnemyUpdate(enemy3Pos);
+                if(enemy2Alive)
+                {
+                    enemy2Pos = EnemyUpdate(enemy2Pos);
+                }
+                
+                if (enemy3Alive)
+                {
+                    enemy3Pos = EnemyUpdate(enemy3Pos);
+                }
+                
+                CheckCollides(playerTurn);
 
                 //player turn
-                PlayerDraw(playerPosX, playerPosY);
-                PlayerUpdate();
 
-                
+                PlayerUpdate();
+                CheckCollides(playerTurn);
+
+                if (playerHealth == 0)
+                {
+                    playerAlive = false;
+                }
+
+                if (!enemy1Alive && !enemy2Alive && !enemy3Alive)
+                {
+                    break;
+                }
+
                 Debug.Print($"Cords: {playerPosX},{playerPosY}");
             }
+
+            Console.Clear();
+
+            if (playerAlive)
+            {
+                Console.WriteLine("You win!");
+            }
+
+            else
+            {
+                Console.WriteLine("You lose");
+            }
+                
         }
     }
 }
