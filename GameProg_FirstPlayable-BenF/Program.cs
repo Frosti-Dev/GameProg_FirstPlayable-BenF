@@ -364,17 +364,17 @@ namespace GameProg_FirstPlayable_BenF
                 {
                     enemy1Pos = EnemyUpdate(enemy1Pos);
                 }
-                
-                if(enemy2Alive)
+
+                if (enemy2Alive)
                 {
                     enemy2Pos = EnemyUpdate(enemy2Pos);
                 }
-                
+
                 if (enemy3Alive)
                 {
                     enemy3Pos = EnemyUpdate(enemy3Pos);
                 }
-                
+
                 CheckCollides(playerTurn);
 
                 //player turn
